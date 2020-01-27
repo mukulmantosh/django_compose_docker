@@ -1,15 +1,23 @@
 version: '3'
 
 services:
+  nginx:
+    build: ./build-scripts/nginx/dev/
+    container_name: backend_dev_nginx
+    image: nginx
+    ports:
+      - 8000:80
+    depends_on:
+      - web
   web:
     build: .
     image: backend:1.0
+    restart: always
     container_name: backend_dev
-    command: gunicorn demo_project.wsgi:application --env DJANGO_SETTINGS_MODULE=demo_project.settings.dev --bind 0.0.0.0:8000
+    command: gunicorn demo_project.wsgi:application --env DJANGO_SETTINGS_MODULE=demo_project.settings.dev --bind 0.0.0.0:5000
     volumes:
       - .:/code
     ports:
-      - 8000:8000
+      - 5000
     env_file:
       - .env
-    network_mode: "host"

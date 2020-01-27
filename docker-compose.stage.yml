@@ -1,15 +1,23 @@
 version: '3'
 
 services:
+  nginx:
+    build: ./build-scripts/nginx/stage/
+    container_name: backend_stage_nginx
+    image: nginx
+    ports:
+      - 7000:80
+    depends_on:
+      - web
   web:
     build: .
     image: backend:1.0
-    container_name: backend_staging
-    command: gunicorn demo_project.wsgi:application --env DJANGO_SETTINGS_MODULE=demo_project.settings.stage --bind 0.0.0.0:7000
+    restart: always
+    container_name: backend_stage
+    command: gunicorn demo_project.wsgi:application --env DJANGO_SETTINGS_MODULE=demo_project.settings.stage --bind 0.0.0.0:4000
     volumes:
       - .:/code
     ports:
-      - 7000:7000
+      - 4000
     env_file:
-      - .staging-env
-    network_mode: "host"
+      - .env
