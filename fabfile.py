@@ -10,9 +10,9 @@ def deploy(ctx):
         # write your deployment task and call it from here.
 
 
-PROJECT_NAME = "project_name"
+PROJECT_NAME = "demo_project"
 PROJECT_PATH = "~/{}".format(PROJECT_NAME)
-REPO_URL = "remote_repo_url"
+REPO_URL = "https://github.com/mukulmantosh/deploy_project"
 
 
 def get_connection(ctx):
@@ -25,9 +25,9 @@ def get_connection(ctx):
 
 @task
 def development(ctx):
-    ctx.user = "username"
-    ctx.host = "host"
-    ctx.connect_kwargs.key_filename = "full/ssh/key/path"
+    ctx.user = "ubuntu"
+    ctx.host = "127.0.0.1"
+    ctx.connect_kwargs.key_filename = "/home/mukul/Downloads/demo.pem"
 
 
 # check if file exists in directory(list)
@@ -37,7 +37,7 @@ def exists(file, dir):
 
 # git tasks
 @task
-def pull(ctx, branch="dev"):
+def pull(ctx, branch="master"):
     # check if ctx is Connection object or Context object
     # if Connection object then calling method from program
     # else calling directly from terminal
@@ -85,7 +85,18 @@ def migrate(ctx):
     else:
         conn = get_connection(ctx)
     with conn.cd(PROJECT_PATH):
-        conn.run("./venv/bin/python manage.py migrate")
+        conn.run("/home/ubuntu/django_env/bin/python manage.py migrate")
+
+
+
+@task
+def packages(ctx):
+    if isinstance(ctx, Connection):
+        conn = ctx
+    else:
+        conn = get_connection(ctx)
+    with conn.cd(PROJECT_PATH):
+        conn.run("/home/ubuntu/django_env/bin/pip install -r requirements.txt")
 
 
 # supervisor tasks
@@ -134,11 +145,13 @@ def deploy(ctx):
         sys.exit("Failed to get connection")
     clone(conn)
     with conn.cd(PROJECT_PATH):
-        print("checkout to dev branch...")
-        checkout(conn, branch="dev")
-        print("pulling latest code from dev branch...")
+        #print("checkout to dev branch...")
+        #checkout(conn, branch="master")
+        print("pulling latest code from master branch...")
         pull(conn)
+        print("installing packages")
+        packages(conn)
         print("migrating database....")
         migrate(conn)
-        print("restarting the supervisor...")
-        restart(conn)
+        # print("restarting the supervisor...")
+        # restart(conn)

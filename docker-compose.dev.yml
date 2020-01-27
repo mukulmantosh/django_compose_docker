@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    image: backend:1.0
+    container_name: backend_dev
+    command: gunicorn demo_project.wsgi:application --env DJANGO_SETTINGS_MODULE=demo_project.settings.dev --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    network_mode: "host"
