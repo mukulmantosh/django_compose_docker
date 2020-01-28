@@ -15,6 +15,11 @@ node {
         stage 'Running Tests'
         sh 'sudo docker container exec backend_dev_app_server python manage.py test --no-input --settings=demo_project.settings.dev'
 
+        stage 'Deploy Approval'
+        input "Do you want to deploy the application to production server ?"
+
+        stage 'Deploy'
+        echo 'Deployed !'
 
     } catch(e) {
         currentBuild.result = "FAILED"
