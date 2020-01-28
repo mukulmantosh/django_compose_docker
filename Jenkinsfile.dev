@@ -4,20 +4,20 @@ node {
         checkout scm
 
         stage 'Stop Servers'
-        sh 'docker-compose -f docker-compose.dev.yml -p backend_dev down'
+        sh 'sudo docker-compose -f docker-compose.dev.yml -p backend_dev down'
 
         stage 'Build & Start Project'
-        sh 'docker-compose -f docker-compose.dev.yml -p backend_dev up -d --build'
+        sh 'sudo docker-compose -f docker-compose.dev.yml -p backend_dev up -d --build'
 
         stage 'Perform DB Migrations'
-        sh 'docker container exec -it backend_dev python manage.py migrate --settings=demo_project.settings.dev'
+        sh 'sudo docker container exec -it backend_dev python manage.py migrate --settings=demo_project.settings.dev'
 
         stage 'Running Tests'
-        sh 'docker container exec -it backend_dev python manage.py test --settings=demo_project.settings.dev'
+        sh 'sudo docker container exec -it backend_dev python manage.py test --settings=demo_project.settings.dev'
 
 
     } catch(e) {
         currentBuild.result = "FAILED"
-        sh 'docker-compose -f docker-compose.dev.yml -p backend_dev down'
+        sh 'sudo docker-compose -f docker-compose.dev.yml -p backend_dev down'
     }
 }
