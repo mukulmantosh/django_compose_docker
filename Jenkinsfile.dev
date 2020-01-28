@@ -1,7 +1,5 @@
 node {
     try {
-        notifyStarted()
-
         stage 'Checkout'
         checkout scm
 
